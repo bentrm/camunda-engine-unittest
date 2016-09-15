@@ -69,9 +69,10 @@ public class SimpleTestCase {
     // Then the process instance is alive and well
     assertThat(!processInstance.isEnded());
 
-    // the sub case instance should have been terminated also
-    final CaseInstance caseInstance = caseInstances.get(0);
     // The case instance feels the same
+    final CaseInstance caseInstance = caseInstances.get(0);
+    assertThat(caseInstance.isActive());
+    assertThat(!caseInstance.isCompleted());
     assertThat(!caseInstance.isTerminated());
 
     // We should be able to correlate a kill message
@@ -85,11 +86,14 @@ public class SimpleTestCase {
     assertThat(processInstance.isEnded());
 
     // as well as the case instance
+    assertThat(!caseInstance.isActive());
+    assertThat(!caseInstance.isCompleted());
     assertThat(caseInstance.isTerminated());
 
     // With the case instance gone, no tasks should be left
     assertThat(taskService()
             .createTaskQuery()
+            .active()
             .list()
             .size()
     ).isEqualTo(0);
